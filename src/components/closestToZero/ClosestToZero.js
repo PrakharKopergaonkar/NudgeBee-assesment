@@ -5,9 +5,25 @@ export default function ClosestToZero() {
   const [result, setResult] = useState(0);
   const [error, setError] = useState(false);
 
+  const validate = useCallback((arr) => {
+    if (arr.length === 0 ||
+      arr.some(
+        num => isNaN(num) ||
+          num < -2147483647 ||
+          num > 2147483647 ||
+          num.trim() === ""
+      )
+    ) {
+      setError('Invalid number. Please enter a number between -2147483647 and 2147483647.');
+      return false
+    } else {
+      setError('');
+      return true
+    }
+  }, [])
+
   const closestToZero = useCallback(() => {
-    if (!numbers || numbers.length === 0) {
-      setResult(0);
+    if (!validate(numbers)) {
       return;
     }
 
@@ -19,19 +35,15 @@ export default function ClosestToZero() {
     }
 
     setResult(closest);
-  }, [numbers]);
+  }, [numbers, validate]);
+
 
   const handleChange = useCallback((e) => {
     let arr = e.target.value.split(",");
-    if (arr.some(num => isNaN(num) || num < -2147483647 || num > 2147483647)) {
-      setError('Invalid number. Please enter a number between -2147483647 and 2147483647.');
-    } else {
-      setError('');
-    }
+    validate(arr)
+    setNumbers(arr)
 
-    setNumbers(e.target.value.split(','))
-
-  }, [])
+  }, [validate])
 
   return (
     <div>
